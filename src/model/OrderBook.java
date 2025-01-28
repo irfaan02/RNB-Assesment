@@ -5,9 +5,9 @@ import enums.Side;
 import java.util.*;
 
 public class OrderBook {
-   private Map<Long, List<Order>> limitOrderBookBuy =new TreeMap<>(Comparator.reverseOrder());
-   private Map<Long, List<Order>> limitOrderBookSell =new TreeMap<>();
-   private Map<String,Order> orderIndex = new HashMap<>();
+   private final Map<Long, List<Order>> limitOrderBookBuy =new TreeMap<>(Comparator.reverseOrder());
+   private final Map<Long, List<Order>> limitOrderBookSell =new TreeMap<>();
+   private final Map<String,Order> orderIndex = new HashMap<>();
 
     public void addOrder(Order order){
         Map<Long, List<Order>> bidLevelPriceAndOrder = order.getSide().equals(Side.BUY) ? limitOrderBookBuy : limitOrderBookSell;
@@ -44,9 +44,13 @@ public class OrderBook {
         addOrder(order);},()-> {throw new RuntimeException("model.Order ID does not exist: "+orderId);});
     }
 
-    public List<Order> OrdersAtBidLevel(long bidLevel, Side side){
+    public List<Order> GetOrdersAtBidLevel(long bidLevel, Side side){
         Map<Long, List<Order>> bidLevelPriceAndOrder = side.equals(Side.BUY)? limitOrderBookBuy : limitOrderBookSell;
         return bidLevelPriceAndOrder.get(bidLevel)==null?new LinkedList<>():bidLevelPriceAndOrder.get(bidLevel);
     }
 
+    public void SetOrdersAtBidLevel(Order order, List<Order> orders) {
+        Map<Long, List<Order>> bidLevelPriceAndOrder = order.getSide().equals(Side.BUY)? limitOrderBookBuy : limitOrderBookSell;
+        bidLevelPriceAndOrder.put(order.getPrice(),orders);
+    }
 }
